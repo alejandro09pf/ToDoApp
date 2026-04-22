@@ -75,16 +75,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create .env file from secrets
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DB: ${{ secrets.MYSQL_DB }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
         run: |
-          cat > .env << EOF
-          DOCKER_IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/todoapp
-          IMAGE_TAG=${{ needs.build-and-push.outputs.image_tag }}
-          MYSQL_HOST=db
-          MYSQL_USER=${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-          MYSQL_DB=${{ secrets.MYSQL_DB }}
-          MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-          EOF
+          printf 'DOCKER_IMAGE=%s/todoapp\nIMAGE_TAG=%s\nMYSQL_HOST=db\nMYSQL_USER=%s\nMYSQL_PASSWORD=%s\nMYSQL_DB=%s\nMYSQL_ROOT_PASSWORD=%s\n' \
+            "$DOCKERHUB_USERNAME" "$IMAGE_TAG" "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_DB" "$MYSQL_ROOT_PASSWORD" > .env
+          echo ".env created:"
+          cat .env
 
       - name: Pull new image
         run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:${{ needs.build-and-push.outputs.image_tag }}
