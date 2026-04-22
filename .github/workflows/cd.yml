@@ -25,6 +25,8 @@ jobs:
 
       - name: Run tests
         run: yarn test --ci --forceExit --coverage
+        env:
+          SQLITE_DB_LOCATION: /tmp/todo-test.db
 
   build-and-push:
     name: Build & Push to Docker Hub

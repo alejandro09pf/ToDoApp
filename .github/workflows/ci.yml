@@ -30,6 +30,8 @@ jobs:
 
       - name: Run tests
         run: yarn test --ci --forceExit --coverage
+        env:
+          SQLITE_DB_LOCATION: /tmp/todo-test.db
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
